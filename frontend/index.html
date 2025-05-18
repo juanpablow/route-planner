@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roteirizador</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2rem;
+      }
+      label {
+        display: block;
+        margin: 1rem 0 0.25rem;
+      }
+      input {
+        padding: 0.5rem;
+        width: 300px;
+      }
+      button {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Roteirizador de Entregas</h1>
+
+    <form id="routeForm">
+      <label for="origin">Ponto de partida (origem):</label>
+      <input
+        type="text"
+        id="origin"
+        name="origin"
+        required
+        placeholder="Ex: Rua A, São Paulo"
+      />
+
+      <div id="destinations">
+        <label>Destino 1:</label>
+        <input
+          type="text"
+          name="destination"
+          required
+          placeholder="Ex: Rua B, São Paulo"
+        />
+
+        <label>Destino 2:</label>
+        <input
+          type="text"
+          name="destination"
+          required
+          placeholder="Ex: Rua C, São Paulo"
+        />
+      </div>
+
+      <button type="button" onclick="addDestination()">
+        + Adicionar destino
+      </button>
+      <br />
+      <button type="submit">Calcular melhor rota</button>
+    </form>
+
+    <div id="result" style="margin-top: 2rem"></div>
+
+    <script>
+      let destinoCount = 2;
+
+      function addDestination() {
+        destinoCount++;
+        const container = document.getElementById("destinations");
+
+        const label = document.createElement("label");
+        label.textContent = `Destino ${destinoCount}:`;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = "destination";
+        input.required = true;
+        input.placeholder = "Ex: Rua X, São Paulo";
+
+        container.appendChild(label);
+        container.appendChild(input);
+      }
+
+      document
+        .getElementById("routeForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const origin = document.getElementById("origin").value;
+          const destinationInputs = document.querySelectorAll(
+            "input[name='destination']"
+          );
+          const destinations = Array.from(destinationInputs).map(
+            (input) => input.value
+          );
+
+          const response = await fetch("http://localhost:3001/route-planner", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ origem: origin, destinos: destinations }),
+          });
+
+          const resultDiv = document.getElementById("result");
+          if (!response.ok) {
+            resultDiv.innerHTML = `<p style="color:red;">Erro ao calcular rota.</p>`;
+            return;
+          }
+
+          const data = await response.json();
+
+          resultDiv.innerHTML = `
+        <h3>Melhor Ordem de Visitação:</h3>
+        <ol>${data.rota_otimizada.map((p) => `<li>${p}</li>`).join("")}</ol>
+        <p><strong>Distância total:</strong> ${
+          data.distancia_total
+        } unidades</p>
+      `;
+        });
+    </script>
+  </body>
+</html>
