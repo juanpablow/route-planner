@@ -99,7 +99,7 @@
           const response = await fetch("http://localhost:3001/route-planner", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ origem: origin, destinos: destinations }),
+            body: JSON.stringify({ origin, destinations }),
           });
 
           const resultDiv = document.getElementById("result");

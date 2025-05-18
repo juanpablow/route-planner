@@ -25,7 +25,7 @@ def route_planner():
     destinations = data.get("destinations")
 
     if not origin or not destinations or not isinstance(destinations, list):
-        return jsonify({"erro": "Origem e destinos são obrigatórios."}), 400
+        return jsonify({"error": "Origem e destinos são obrigatórios."}), 400
 
     # Geocodificar todos os endereços
     try:
