@@ -9,7 +9,7 @@ from haversine import haversine
 app = Flask(__name__)
 geolocator = Nominatim(user_agent="route-planner")
 
-CORS(app)
+CORS(app, origins=["http://localhost:3000"])
 
 
 @app.route("/")
@@ -27,7 +27,6 @@ def route_planner():
     if not origin or not destinations or not isinstance(destinations, list):
         return jsonify({"error": "Origem e destinos são obrigatórios."}), 400
 
-    # Geocodificar todos os endereços
     try:
         raw_points = [origin] + destinations
         coord_points = {}
@@ -39,7 +38,6 @@ def route_planner():
     except Exception as e:
         return jsonify({"error": f"Erro na geocodificação: {str(e)}"}), 500
 
-    # Criar grafo com distâncias
     G = nx.Graph()
     for point1 in coord_points:
         for point2 in coord_points:
@@ -47,7 +45,6 @@ def route_planner():
                 distance = haversine(coord_points[point1], coord_points[point2])
                 G.add_edge(point1, point2, weight=distance)
 
-    # Resolver TSP: origem fixa, destinos permutados
     def calculate_total_distance(path):
         distance = 0
         for i in range(len(path) - 1):
@@ -67,7 +64,11 @@ def route_planner():
             best_route = path
 
     return jsonify(
-        {"rota_otimizada": best_route, "distancia_total": round(shortest_distance, 2)}
+        {
+            "rota_otimizada": best_route,
+            "distancia_total": round(shortest_distance, 2),
+            "coordenadas": [coord_points[p] for p in best_route],
+        }
     )
 
 
