@@ -15,7 +15,7 @@ OPEN_CAGE_API_KEY = os.getenv("OPEN_CAGE_API_KEY")
 ORS_API_KEY = os.getenv("ORS_API_KEY")
 
 app = Flask(__name__)
-geolocator = Nominatim(user_agent="route-planner")
+geolocator = OpenCage(api_key=OPEN_CAGE_API_KEY)
 
 CORS(app, origins=["http://localhost:3000"])
 
