@@ -1,14 +1,13 @@
 const fixedDestinationBlock = 2;
 
 function addDestination() {
-  destinationsCount++;
   const container = document.getElementById("destinations");
 
   const wrapper = document.createElement("div");
+  wrapper.className = "relative group border rounded-md p-2 pb-4";
 
   const label = document.createElement("label");
-  label.textContent = `Destino ${destinationsCount}:`;
-  label.className = "block text-sm font-medium text-gray-700";
+  label.className = "block text-sm font-medium text-gray-700 destination-label";
 
   const input = document.createElement("input");
   input.type = "text";
@@ -74,19 +73,13 @@ document
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.data.error.includes("Address not found")) {
+          alert(response.data.error);
+          return;
+        }
         resultDiv.innerHTML = `<p class="text-red-600 font-medium">Erro ao calcular rota.</p>`;
         return;
       }
-
-      resultDiv.innerHTML = `
-      <h3 class="text-xl font-semibold text-blue-600 mb-2">Melhor Ordem de Visitação:</h3>
-      <ol class="list-decimal list-inside space-y-1">
-        ${data.rota_otimizada.map((p) => `<li>${p}</li>`).join("")}
-      </ol>
-      <p class="mt-4 font-medium text-gray-700">
-        <strong>Distância total:</strong> ${data.distancia_total} km
-      </p>
-    `;
 
       const coords = data.coordenadas;
 
@@ -100,24 +93,35 @@ document
         attribution: "&copy; OpenStreetMap contributors",
       }).addTo(window.routeMap);
 
-      const latlngs = [];
-
       coords.forEach((coord, i) => {
         L.marker(coord)
           .addTo(window.routeMap)
           .bindPopup(`Parada ${i + 1}`);
-        latlngs.push(coord);
       });
 
-      latlngs.push(coords[0]);
+      await drawRealRouteByRoads(coords, window.routeMap);
 
-      L.polyline(latlngs, { color: "blue", weight: 4 }).addTo(window.routeMap);
+      window.routeMap.whenReady(() => {
+        setTimeout(() => {
+          window.routeMap.invalidateSize();
+        }, 100);
+      });
 
-      setTimeout(() => {
-        window.routeMap.invalidateSize();
-      }, 100);
+      resultDiv.innerHTML = `
+      <h3 class="text-xl font-semibold text-blue-600 mb-2">Melhor Ordem de Visitação:</h3>
+      <ol class="list-decimal list-inside space-y-1">
+        ${data.rota_otimizada.map((p) => `<li>${p}</li>`).join("")}
+      </ol>
+      <p class="mt-4 font-medium text-gray-700">
+        <strong>Distância total:</strong> ${data.distancia_total} km
+      </p>
+    `;
 
-      document.getElementById("map").scrollIntoView({ behavior: "smooth" });
+      const mapContainer = document.getElementById("map");
+
+      mapContainer.classList.remove("hidden");
+
+      mapContainer.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
       resultDiv.innerHTML = `<p class="text-red-600 font-medium">Erro ao se comunicar com a API.</p>`;
       console.error("Erro na requisição:", err);
@@ -125,3 +129,29 @@ document
       loading.classList.add("hidden");
     }
   });
+
+async function drawRealRouteByRoads(coords, mapInstance) {
+  const coordinates = coords.map(([lat, lon]) => [lon, lat]);
+
+  const response = await fetch("http://localhost:3001/ors-route", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ coordinates }),
+  });
+
+  if (!response.ok) {
+    console.error("Erro ao buscar rota real via API Flask");
+    return;
+  }
+
+  const data = await response.json();
+
+  L.geoJSON(data, {
+    style: {
+      color: "blue",
+      weight: 4,
+    },
+  }).addTo(mapInstance);
+}
