@@ -8,6 +8,8 @@ services:
     volumes:
       - ./api:/app
     command: python app.py
+    env_file:
+      - "./api/.env"
 
   front:
     build: ./frontend
