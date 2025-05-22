@@ -1,4 +1,4 @@
-let destinationsCount = 2;
+const fixedDestinationBlock = 2;
 
 function addDestination() {
   destinationsCount++;
@@ -18,9 +18,31 @@ function addDestination() {
   input.className =
     "mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500";
 
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className =
+    "absolute top-2 right-2 text-red-500 hover:text-red-700 transition";
+  removeBtn.innerHTML = `<i data-lucide="trash-2" class="w-5 h-5"></i>`;
+  removeBtn.onclick = () => {
+    wrapper.remove();
+    updateDestinationCount();
+  };
+
   wrapper.appendChild(label);
   wrapper.appendChild(input);
+  wrapper.appendChild(removeBtn);
+
   container.appendChild(wrapper);
+
+  updateDestinationCount();
+  lucide.createIcons();
+}
+
+function updateDestinationCount() {
+  const labels = document.querySelectorAll(".destination-label");
+  labels.forEach((label, index) => {
+    label.textContent = `Destino ${fixedDestinationBlock + (index + 1)}:`;
+  });
 }
 
 document
