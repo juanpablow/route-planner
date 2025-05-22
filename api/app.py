@@ -1,10 +1,18 @@
 import itertools
+import os
 
 import networkx as nx
+import requests
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from geopy.geocoders import Nominatim
+from geopy.geocoders import OpenCage
 from haversine import haversine
+
+load_dotenv()
+
+OPEN_CAGE_API_KEY = os.getenv("OPEN_CAGE_API_KEY")
+ORS_API_KEY = os.getenv("ORS_API_KEY")
 
 app = Flask(__name__)
 geolocator = Nominatim(user_agent="route-planner")
