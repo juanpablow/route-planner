@@ -41,7 +41,7 @@ def route_planner():
         for point in raw_points:
             location = geolocator.geocode(point)
             if not location:
-                return jsonify({"error": f"Endereço não encontrado: {point}"}), 400
+                return jsonify({"error": f"Address not found: {point}"}), 400
             coord_points[point] = (location.latitude, location.longitude)
     except Exception as e:
         return jsonify({"error": f"Erro na geocodificação: {str(e)}"}), 500
@@ -78,6 +78,32 @@ def route_planner():
             "coordenadas": [coord_points[p] for p in best_route],
         }
     )
+
+
+@app.route("/ors-route", methods=["POST"])
+def ors_route():
+    data = request.get_json()
+    coordinates = data.get("coordinates")
+
+    if not coordinates:
+        return jsonify({"erro": "Coordenadas não fornecidas"}), 400
+
+    body = {"coordinates": coordinates, "format": "geojson"}
+
+    headers = {
+        "Authorization": ORS_API_KEY,
+        "Content-Type": "application/json",
+    }
+
+    ors_url = "https://api.openrouteservice.org/v2/directions/driving-car/geojson"
+    response = requests.post(ors_url, json=body, headers=headers)
+
+    if response.status_code != 200:
+        return jsonify(
+            {"erro": "Falha na OpenRouteService", "status": response.status_code}
+        ), response.status_code
+
+    return jsonify(response.json())
 
 
 if __name__ == "__main__":
