@@ -4,3 +4,5 @@ networkx
 matplotlib
 haversine
 geopy
+python-dotenv
+requests
