@@ -13,12 +13,13 @@ load_dotenv()
 
 OPEN_CAGE_API_KEY = os.getenv("OPEN_CAGE_API_KEY")
 ORS_API_KEY = os.getenv("ORS_API_KEY")
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 MAX_DESTINATIONS_EXACT = 6
 
 app = Flask(__name__)
 geolocator = OpenCage(api_key=OPEN_CAGE_API_KEY)
 
-CORS(app, origins=["http://localhost:3000"])
+CORS(app, origins=[FRONTEND_URL])
 
 
 @app.route("/")
