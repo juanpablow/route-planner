@@ -1,0 +1,14 @@
+{
+  "dev": {
+    "app_function": "app.app",
+    "aws_region": "us-east-1",
+    "profile_name": "default",
+    "project_name": "route-planner-api",
+    "runtime": "python3.11",
+    "s3_bucket": "zappa-meu-projeto",
+    "environment_variables": {
+      "ORS_API_KEY": "valor_injetado_só_em_deploy",
+      "OPENCAGE_API_KEY": "valor_injetado_só_em_deploy"
+    }
+  }
+}
