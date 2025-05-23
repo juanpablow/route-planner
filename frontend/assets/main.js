@@ -73,11 +73,19 @@ document
       const data = await response.json();
 
       if (!response.ok) {
-        if (response.data.error.includes("Address not found")) {
-          alert(response.data.error);
-          return;
+        if (response.status === 422) {
+          showToast(
+            "Distância total muito alta. Reduza os destinos e tente novamente.",
+            "error"
+          );
+        } else if (response.status === 400) {
+          showToast(
+            "Endereço inválido ou não localizado. Verifique os dados.",
+            "error"
+          );
+        } else {
+          showToast("Erro ao calcular rota. Tente novamente.", "error");
         }
-        resultDiv.innerHTML = `<p class="text-red-600 font-medium">Erro ao calcular rota.</p>`;
         return;
       }
 
@@ -142,7 +150,7 @@ async function drawRealRouteByRoads(coords, mapInstance) {
   });
 
   if (!response.ok) {
-    console.error("Erro ao buscar rota real via API Flask");
+    showToast("Erro ao tentar buscar rota real. Tente novamente.", "error");
     return;
   }
 
@@ -154,4 +162,21 @@ async function drawRealRouteByRoads(coords, mapInstance) {
       weight: 4,
     },
   }).addTo(mapInstance);
+}
+
+function showToast(message, icon = "success") {
+  Swal.fire({
+    toast: true,
+    position: "top",
+    icon,
+    title: message,
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.style.fontSize = "16px";
+      toast.style.minWidth = "auto";
+      toast.style.padding = "8px 12px";
+    },
+  });
 }
