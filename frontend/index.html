@@ -14,52 +14,73 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
-  <body class="bg-gray-500 text-gray-800 min-h-screen flex">
+  <body
+    class="bg-gray-100 text-gray-800 min-h-screen flex flex-col md:flex-row"
+  >
+    <!-- Imagem Mobile (Topo) -->
+    <div
+      class="w-full flex md:hidden flex-col items-center justify-center p-6 bg-[#0c1d34] text-white animate-fade-in"
+    >
+      <img
+        src="./public/route-planner-bg.png"
+        alt="Logo Roteirizador"
+        class="w-48 h-auto mb-2 transition-all duration-300 ease-in-out"
+      />
+      <h2 class="text-xl font-bold text-center">Roteirizador de Rotas</h2>
+      <p class="text-center text-gray-300 mt-1 max-w-sm leading-tight text-sm">
+        Planeje e otimize suas rotas de forma inteligente.
+      </p>
+    </div>
+
     <!-- Esquerda: Formulário -->
-    <div class="w-1/2 bg-gray-50 flex items-center justify-center p-10">
+    <div
+      class="w-full md:w-1/2 bg-white flex items-center justify-center p-6 md:p-10 shadow-md animate-fade-in"
+    >
       <div class="w-full max-w-xl">
-        <h1 class="text-3xl font-bold mb-6 text-blue-700 text-center">
+        <h1
+          class="text-2xl md:text-3xl font-bold mb-6 text-blue-700 text-center"
+        >
           Roteirizador de Rotas
         </h1>
 
         <form id="routeForm" class="space-y-4">
           <div>
-            <label for="origin" class="block text-sm font-medium text-gray-700"
-              >Origem:</label
-            >
+            <label for="origin" class="block text-sm font-medium text-gray-700">
+              Origem:
+            </label>
             <input
               type="text"
               id="origin"
               name="origin"
               required
               placeholder="Ex: Rua A, São Paulo"
-              class="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              class="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
             />
           </div>
 
           <div id="destinations" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Destino 1:</label
-              >
+              <label class="block text-sm font-medium text-gray-700">
+                Destino 1:
+              </label>
               <input
                 type="text"
                 name="destination"
                 required
                 placeholder="Ex: Rua B, São Paulo"
-                class="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
               />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700"
-                >Destino 2:</label
-              >
+              <label class="block text-sm font-medium text-gray-700">
+                Destino 2:
+              </label>
               <input
                 type="text"
                 name="destination"
                 required
                 placeholder="Ex: Rua C, São Paulo"
-                class="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                class="mt-1 block w-full border border-gray-300 rounded-md px-4 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ease-in-out"
               />
             </div>
           </div>
@@ -67,14 +88,14 @@
           <button
             type="button"
             onclick="addDestination()"
-            class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-md transition"
+            class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-md transition-all duration-300 ease-in-out hover:scale-105"
           >
             + Adicionar destino
           </button>
 
           <button
             type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md w-full transition"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md w-full transition-all duration-300 ease-in-out hover:scale-105"
           >
             Calcular melhor rota
           </button>
@@ -97,12 +118,12 @@
               r="10"
               stroke="currentColor"
               stroke-width="4"
-            ></circle>
+            />
             <path
               class="opacity-75"
               fill="currentColor"
               d="M4 12a8 8 0 018-8v8z"
-            ></path>
+            />
           </svg>
           Calculando rota, por favor aguarde...
         </div>
@@ -113,30 +134,45 @@
         ></div>
         <div
           id="map"
-          class="mt-6 rounded-lg shadow-md hidden w-full h-[400px]"
+          class="mt-6 rounded-lg shadow-md hidden w-full h-[300px] md:h-[400px]"
         ></div>
       </div>
     </div>
 
-    <!-- Direita: Branding -->
+    <!-- Direita: Imagem (Desktop) -->
     <div
-      class="w-1/2 bg-[#0c1d34] text-white flex flex-col items-center justify-center p-10"
+      class="hidden md:flex w-1/2 bg-[#0c1d34] text-white flex-col items-center justify-center p-10 animate-fade-in"
     >
-      <div class="flex flex-col items-center gap-[0.25rem]">
-        <!-- reduzido de gap-2 para gap-1 -->
+      <div class="flex flex-col items-center gap-1">
         <img
           src="./public/route-planner-bg.png"
           alt="Logo Roteirizador"
-          class="w-96 h-auto"
+          class="w-96 h-auto transition-all duration-300 ease-in-out hover:scale-105"
         />
         <h2 class="text-2xl font-bold text-center">Roteirizador de Rotas</h2>
         <p class="text-center text-gray-300 mt-1 max-w-sm leading-tight">
-          <!-- reduzido mt-2 para mt-1 -->
           Planeje e otimize suas rotas de forma inteligente.
         </p>
       </div>
     </div>
 
     <script src="./assets/main.js"></script>
+
+    <style>
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in {
+        animation: fade-in 0.5s ease-out both;
+      }
+    </style>
   </body>
 </html>
