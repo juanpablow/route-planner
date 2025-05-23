@@ -31,6 +31,9 @@ def home():
 def route_planner():
     data = request.get_json()
 
+    if not data:
+        return jsonify({"error": "Nenhum dado recebido"}), 400
+
     origin = data.get("origin")
     destinations = data.get("destinations")
 
@@ -125,6 +128,14 @@ def ors_route():
         ), response.status_code
 
     return jsonify(response.json())
+
+
+@app.after_request
+def apply_cors(response):
+    response.headers["Access-Control-Allow-Origin"] = FRONTEND_URL
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+    return response
 
 
 if __name__ == "__main__":
