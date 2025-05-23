@@ -13,6 +13,7 @@ load_dotenv()
 
 OPEN_CAGE_API_KEY = os.getenv("OPEN_CAGE_API_KEY")
 ORS_API_KEY = os.getenv("ORS_API_KEY")
+MAX_DESTINATIONS_EXACT = 6
 
 app = Flask(__name__)
 geolocator = OpenCage(api_key=OPEN_CAGE_API_KEY)
@@ -60,16 +61,35 @@ def route_planner():
         distance += G[path[-1]][path[0]]["weight"]
         return distance
 
-    best_route = []
-    shortest_distance = float("inf")
+    def nearest_neighbor(origin, destinations, coord_points):
+        unvisited = set(destinations)
+        path = [origin]
+        current = origin
 
-    only_destinations = destinations
-    for perm in itertools.permutations(only_destinations):
-        path = [origin] + list(perm)
-        distance = calculate_total_distance(path)
-        if distance < shortest_distance:
-            shortest_distance = distance
-            best_route = path
+        while unvisited:
+            nearest = min(
+                unvisited,
+                key=lambda point: haversine(coord_points[current], coord_points[point]),
+            )
+            path.append(nearest)
+            unvisited.remove(nearest)
+            current = nearest
+
+        return path
+
+    if len(destinations) <= MAX_DESTINATIONS_EXACT:
+        best_route = []
+        shortest_distance = float("inf")
+
+        for perm in itertools.permutations(destinations):
+            path = [origin] + list(perm)
+            distance = calculate_total_distance(path)
+            if distance < shortest_distance:
+                shortest_distance = distance
+                best_route = path
+    else:
+        best_route = nearest_neighbor(origin, destinations, coord_points)
+        shortest_distance = calculate_total_distance(best_route)
 
     return jsonify(
         {
