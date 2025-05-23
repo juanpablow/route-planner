@@ -64,11 +64,14 @@ document
     resultDiv.innerHTML = "";
 
     try {
-      const response = await fetch("http://localhost:3001/route-planner", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ origin, destinations }),
-      });
+      const response = await fetch(
+        "https://api.juanpablosmdev.me/route-planner",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ origin, destinations }),
+        }
+      );
 
       const data = await response.json();
 
@@ -141,7 +144,7 @@ document
 async function drawRealRouteByRoads(coords, mapInstance) {
   const coordinates = coords.map(([lat, lon]) => [lon, lat]);
 
-  const response = await fetch("http://localhost:3001/ors-route", {
+  const response = await fetch("https://api.juanpablosmdev.me/ors-route", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
